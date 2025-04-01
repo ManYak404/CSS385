@@ -180,7 +180,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 15
+  orthographic size: 9.977497
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -292,8 +292,8 @@ Transform:
   m_GameObject: {fileID: 1040059834}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.5, y: 0.5, z: 1}
+  m_LocalPosition: {x: 0.04, y: 0.01, z: 0}
+  m_LocalScale: {x: 4, y: 1.5, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -340,6 +340,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pipePrefab: {fileID: 6262934082521411400, guid: d4aac9acb0d11a147b67f6154e18599e, type: 3}
+  bird: {fileID: 0}
 --- !u!4 &1181033003
 Transform:
   m_ObjectHideFlags: 0
