@@ -1,26 +1,74 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
+using Unity.VisualScripting;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class Manager : MonoBehaviour
 {
     public GameObject pipePrefab;
     public GameObject bird;
-    float height = 30;
+    float height = 10;
+    float spawnInterval = 3.5f; // Interval in seconds
+    float timeSinceLastSpawn = 0f; // Timer to track time since last spawn
+    int score = 0; // Score variable
+    float nextPipeX = -1f; // X position of the next pipe
 
     // Start is called before the first frame update
     void Start()
     {
-        Instantiate(pipePrefab, new Vector3(15, 10, 0), Quaternion.identity);
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(bird.transform.position.y < -height || bird.transform.position.y > height)
+        if(bird.transform.position.y > height-0.5f)
         {
-            Debug.Log("Game Over");
-            Time.timeScale = 0;
+            bird.transform.position = new Vector3(bird.transform.position.x, height-0.5f, bird.transform.position.z);
+            bird.GetComponent<FlappyBird>().verticalSpeed = 0f; // Stop the bird from going higher than the height
         }
+
+        if(bird.transform.position.y < -height+0.5f)
+        {
+            bird.transform.position = new Vector3(bird.transform.position.x, -height+0.5f, bird.transform.position.z);
+            bird.GetComponent<FlappyBird>().verticalSpeed = 0f; // Stop the bird from going lower than the height
+        }
+
+        // Increment the timer
+        timeSinceLastSpawn += Time.deltaTime;
+
+        if(nextPipeX != -1f)
+        {
+            if(bird.transform.position.x > nextPipeX)
+            {
+                score++;
+                Debug.Log("Score: " + score);
+                nextPipeX = -1f; // Reset the next pipe position
+            }
+        }
+
+        // Spawn a pipe if the interval has passed
+        if (timeSinceLastSpawn >= spawnInterval)
+        {
+            nextPipeX = spawnPipe(); // Get the X position of the next pipe
+            timeSinceLastSpawn = 0f; // Reset the timer
+        }
+
+    }
+
+    float spawnPipe()
+    {
+        float randomGapWidth = Random.Range(2, 4f);
+        float randomY = Random.Range(-height+randomGapWidth, height-randomGapWidth);
+        float topPipeHeight = height-(randomY+randomGapWidth);
+        float bottomPipeHeight = Mathf.Abs(randomY-randomGapWidth+height);
+        GameObject topPipe = Instantiate(pipePrefab, new Vector3(bird.transform.position.x + 20, height-(topPipeHeight/2), 0), Quaternion.identity);
+        GameObject bottomPipe = Instantiate(pipePrefab, new Vector3(bird.transform.position.x + 20, -height+(bottomPipeHeight/2), 0), Quaternion.identity);
+        topPipe.transform.localScale = new Vector3(3, topPipeHeight, 1);
+        bottomPipe.transform.localScale = new Vector3(3, bottomPipeHeight, 1);
+        Debug.Log("Spawned pipe at: " + bird.transform.position.x + 20 + ", " + randomY);
+        return topPipe.transform.position.x;
     }
 }
