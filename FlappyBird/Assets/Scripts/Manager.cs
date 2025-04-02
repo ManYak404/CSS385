@@ -13,7 +13,7 @@ public class Manager : MonoBehaviour
     float spawnInterval = 3.5f; // Interval in seconds
     float timeSinceLastSpawn = 0f; // Timer to track time since last spawn
     int score = 0; // Score variable
-    float nextPipeX = -1f; // X position of the next pipe
+    Queue<float> upcomingPipeX = new Queue<float>(); // Stack to keep track of upcoming pipes
 
     // Start is called before the first frame update
     void Start()
@@ -39,26 +39,26 @@ public class Manager : MonoBehaviour
         // Increment the timer
         timeSinceLastSpawn += Time.deltaTime;
 
-        if(nextPipeX != -1f)
+        if(upcomingPipeX.Count != 0)
         {
-            if(bird.transform.position.x > nextPipeX)
+            // Check if the bird has passed the next pipe
+            if (bird.transform.position.x >= upcomingPipeX.Peek())
             {
                 score++;
                 Debug.Log("Score: " + score);
-                nextPipeX = -1f; // Reset the next pipe position
+                upcomingPipeX.Dequeue(); // Remove the passed pipe from the stack
             }
         }
-
         // Spawn a pipe if the interval has passed
         if (timeSinceLastSpawn >= spawnInterval)
         {
-            nextPipeX = spawnPipe(); // Get the X position of the next pipe
+            upcomingPipeX.Enqueue(SpawnPipe()); // Get the X position of the next pipe
             timeSinceLastSpawn = 0f; // Reset the timer
         }
 
     }
 
-    float spawnPipe()
+    float SpawnPipe()
     {
         float randomGapWidth = Random.Range(2, 4f);
         float randomY = Random.Range(-height+randomGapWidth, height-randomGapWidth);
