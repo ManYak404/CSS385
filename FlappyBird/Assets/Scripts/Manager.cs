@@ -12,7 +12,7 @@ public class Manager : MonoBehaviour
     float height = 10;
     float spawnInterval = 3.5f; // Interval in seconds
     float timeSinceLastSpawn = 0f; // Timer to track time since last spawn
-    int score = 0; // Score variable
+    public static int score = 0; // Score variable
     Queue<float> upcomingPipeX = new Queue<float>(); // Stack to keep track of upcoming pipes
 
     // Start is called before the first frame update
