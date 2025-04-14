@@ -5,11 +5,12 @@ using UnityEngine;
 
 public class FlappyBird : MonoBehaviour
 {
-    float gravity = -7f;
+    float gravity = -14f;
     public float verticalSpeed = 0f;
     float forwardSpeed = 4f;
     float forwardAcceleration = 0.1f;
-    float jumpForce = 6f;
+    float jumpForce = 10f;
+    [SerializeField] Transform spriteTransform;
 
     // Start is called before the first frame update
     void Start()
@@ -22,7 +23,13 @@ public class FlappyBird : MonoBehaviour
     {
         if (verticalSpeed>-20f)
         {
-            verticalSpeed += gravity * Time.deltaTime;
+            if(verticalSpeed>0f)
+            {
+                verticalSpeed += gravity * Time.deltaTime * 2f; // Speed up the fall when going up
+            }
+            else{
+                verticalSpeed += gravity * Time.deltaTime; // Normal fall speed
+            }
         }
         if(forwardSpeed<10f)
         {
@@ -32,8 +39,9 @@ public class FlappyBird : MonoBehaviour
         {
             verticalSpeed = jumpForce;
         }
-        transform.Translate(Vector2.right * forwardSpeed * Time.deltaTime);
-        transform.Translate(Vector2.up * verticalSpeed * Time.deltaTime);
+        transform.Translate(new Vector2(forwardSpeed,0) * Time.deltaTime);
+        transform.Translate(new Vector2(0,verticalSpeed) * Time.deltaTime);
+        setBirdDirection();
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -52,5 +60,12 @@ public class FlappyBird : MonoBehaviour
             Debug.Log("Flappy bird hit the ground!");
             SceneManager.LoadScene("GameOverScene");
         }
+    }
+
+    void setBirdDirection()
+    {
+        Vector2 direction = new Vector2(forwardSpeed, verticalSpeed);
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        spriteTransform.localRotation = Quaternion.Euler(0, 0, angle);
     }
 }
